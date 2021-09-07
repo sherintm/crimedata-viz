@@ -13,36 +13,24 @@ database = client['crime_database']
 crime_collection = database.get_collection("crime_table")
 offence_collection = database.get_collection("offencetable")
 victim_collection = database.get_collection("victimtable")
-# result_1 = crime_collection.find({
-#     "Year" : 2021
-# })
-# for i in result_1:
-#     print(i)
-#Route to render index.html template using data from Mongo
+
+#Route /
 @app.route("/")
 def home():
-
-    # # Find one record of data from the mongo database
-    # mars_data = mongo.db.crime_table.find_one()
-    # print(mars_data)
-    # # Return template and data
-    # return render_template("index.html", mars_data=mars_data)
     return "Home"
 
 @app.route("/crime_incidents/<year>")
 def crime_incidents(year):
+
     """Fetch the criminal incidents data for specific year"""
     result_1 = crime_collection.find(
-        {"Year" : 2021},{"_id" : 0})
-    for i in result_1:
-        print(i)
+        {"Year" : int(year)}, {'_id':0})
+
     crime_list = list(result_1)
-  
     # Converting to the JSON
     json_data = dumps(crime_list, indent = 2) 
-   
 
-    return str(crime_list)
+    return json_data
 
 if __name__ == '__main__':
     app.run(debug=True)
