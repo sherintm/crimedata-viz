@@ -23,14 +23,14 @@ def home():
 def crime_incidents(year):
 
     """Fetch the criminal incidents data for specific year"""
-    result_1 = crime_collection.find(
+    crime_records = crime_collection.find(
         {"Year" : int(year)}, {'_id':0})
 
-    crime_list = list(result_1)
+    crime_list = list(crime_records)
     # Converting to the JSON
-    json_data = dumps(crime_list, indent = 2) 
+    crime_json_data = dumps(crime_list, indent = 2) 
 
-    return json_data
+    return crime_json_data
 
 if __name__ == '__main__':
     app.run(debug=True)
