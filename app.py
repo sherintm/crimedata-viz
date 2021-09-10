@@ -2,6 +2,8 @@ from flask import Flask
 from flask_pymongo import pymongo
 from bson.json_util import dumps
 from flask_cors import CORS, cross_origin
+import os
+import json
 
 # Create an instance of Flask
 app = Flask(__name__)
@@ -15,6 +17,26 @@ crime_collection = database.get_collection("crime_table")
 lga_data_collection = database.get_collection("lga_data_table")
 offence_collection = database.get_collection("offence_table")
 victim_collection = database.get_collection("victim_table")
+
+lga_file_path = os.path.join("Data", "VIC_LGA_shp2.json")
+polygon_file_path = os.path.join("Data", "VIC_LGA_POLYGON_shp.json")
+updated_lga_path = os.path.join("Data", "Updated_LGA.json")
+
+with open(lga_file_path) as jsonfile:
+    lga_json = json.load(jsonfile)
+
+with open(polygon_file_path) as jsonfile:
+    polygon_json = json.load(jsonfile)
+
+#print(lga_json)
+inc = 0
+for feature in lga_json['features']:
+    #print(feature['properties']['ABB_NAME'])
+    lga_json['features'][inc]['geometry'] = polygon_json['geometries'][inc]
+    inc += 1
+
+with open(updated_lga_path, "w") as outfile:
+    json.dump(lga_json, outfile)
 
 #Route /
 @app.route("/")
@@ -118,7 +140,6 @@ def lga_crime_data(year):
 
     lga_data_list = list(lga_data_records)
 
-
     for crime_data in crime_records:
         i = 0
 
@@ -140,6 +161,25 @@ def lga_crime_data(year):
 
     return lga_crime_json_data
 
+@app.route("/lga_crime_data_adv/<year>")
+@cross_origin()
+def lga_crime_data_adv(year):
+
+    crime_records = crime_collection.find(
+    {"year" : int(year)}, {'_id':0})
+
+    for crime_data in crime_records:
+        i = 0
+        for feature in lga_json['features']:
+            if(feature['properties']['ABB_NAME'] == crime_data['lga'].upper()):
+                lga_crime_data = {}
+                lga_crime_data['year'] = crime_data['year']
+                lga_crime_data['incidents_recorded'] = crime_data['incidents_recorded']
+                lga_crime_data['rate_per_100k'] = crime_data['rate_per_100k_population']
+                lga_json['features'][i]['properties']['lga_crime_data'] = lga_crime_data
+                print(lga_crime_data)
+            i += 1
+    return lga_json
 
 if __name__ == '__main__':
     app.run(debug=True)
