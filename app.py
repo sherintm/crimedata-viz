@@ -179,7 +179,9 @@ def lga_crime_data_adv(year):
                 lga_json['features'][i]['properties']['lga_crime_data'] = lga_crime_data
                 print(lga_crime_data)
             i += 1
-    return lga_json
+    lga_crime_json_data = dumps(lga_json, indent = 2)
+    return lga_crime_json_data
+    #return lga_json
 
 if __name__ == '__main__':
     app.run(debug=True)
