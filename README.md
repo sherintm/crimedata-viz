@@ -1,4 +1,4 @@
-# crimedata-viz
+# Crime Data Visualisation
 This project is aimed to look at available data for Crime Incidents across Victoria for the past five years from 2017 to 2021 to identify the safest LGAs (Local Government Areas) in Victoria. The following scenarios were specifically looked at:<br>
 <ul>
 <li>Geo Spatial mapping of crime rates across the 79 LGAs in Victoria</li>
